@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Management System</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Expense Management System</h1>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <form method="post">
+        <label for="expense_data">Enter Expense Data (JSON Format):</label><br>
+        <textarea id="expense_data" name="expense_data" rows="4" cols="50"></textarea><br>
+        <label for="strategy">Choose Calculation Strategy:</label><br>
+        <select name="strategy">
+            <option value="simple">Simple Cost Strategy</option>
+            <option value="detailed">Detailed Cost Strategy</option>
+        </select><br>
+        <input type="submit" value="Record Expense">
+    </form>
+    <form method="post" action="/undo">
+        <input type="submit" value="Undo Last Expense">
+    </form>    
+    <h2>Expense History</h2>
+    <ul>
+    {% for expense in expenses %}
+        <li>{{ expense }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
