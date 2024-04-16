@@ -30,23 +30,26 @@ def is_summer():
 def index():
     message = None
     if request.method == 'POST':
-        data = request.form['expense_data']
-        strategy_choice = request.form['strategy']
-        try:
-            parsed_data = json.loads(data)
-        except json.JSONDecodeError:
-            message = "Invalid JSON data provided."
-            return render_template('index.html', message=message, expenses=expenses)
+        expense_data = request.form.get('expense_data')
+        strategy_choice = request.form.get('strategy')
 
-        adapted_data = data_adapter.adapt(parsed_data)
+        if expense_data and strategy_choice:  # Перевірка наявності обов'язкових полів
+            data = json.loads(expense_data)
+            adapted_data = data_adapter.adapt(data)
 
+            if strategy_choice == 'simple':
+                cost_strategy.set_strategy(SimpleCostStrategy())
+            else:
+                cost_strategy.set_strategy(DetailedCostStrategy())
 
-        expense = base_expense_calculator.calculate_expense(adapted_data, cost_strategy)
-        originator.set_state(expense)
-        caretaker.backup()
-        expense_tracker.notify(expense)
-        expenses.append(expense)  # Додавання витрати до історії
-        message = f"Expense recorded successfully: {expense}"
+            expense = base_expense_calculator.calculate_expense(adapted_data, cost_strategy)
+            originator.set_state(expense)
+            caretaker.backup()
+            expense_tracker.notify(expense)
+            expenses.append(expense)
+            message = f"Expense recorded successfully: {expense}"
+        else:
+            message = "Please fill in all required fields."
 
     return render_template('index.html', message=message, expenses=expenses)
 
