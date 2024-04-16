@@ -1,10 +1,11 @@
 from flask import Flask, request, render_template, redirect, url_for
-from patterns.observer import ExpenseTracker, EmailAlert, SMSAlert
+from patterns.observer import ExpenseTracker, EmailAlert, SMSAlert, TelegramAlert
 from patterns.strategy import SimpleCostStrategy, DetailedCostStrategy, CostCalculationStrategy
 from patterns.template_method import BaseExpenseCalculator
 from patterns.adapter import DataAdapter
 from patterns.memento import Caretaker, Originator
 import json
+import datetime
 
 app = Flask(__name__)
 
@@ -12,6 +13,7 @@ app = Flask(__name__)
 expense_tracker = ExpenseTracker()
 expense_tracker.subscribe(EmailAlert())
 expense_tracker.subscribe(SMSAlert())
+expense_tracker.subscribe(TelegramAlert())
 cost_strategy = CostCalculationStrategy()
 base_expense_calculator = BaseExpenseCalculator()
 data_adapter = DataAdapter()
@@ -19,6 +21,10 @@ originator = Originator()
 caretaker = Caretaker(originator)
 
 expenses = []  # Ліст для зберігання історії витрат
+
+def is_summer():
+    current_month = datetime.datetime.now().month
+    return current_month in [6, 7, 8]
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -34,10 +40,6 @@ def index():
 
         adapted_data = data_adapter.adapt(parsed_data)
 
-        if strategy_choice == 'simple':
-            cost_strategy.set_strategy(SimpleCostStrategy())
-        else:
-            cost_strategy.set_strategy(DetailedCostStrategy())
 
         expense = base_expense_calculator.calculate_expense(adapted_data, cost_strategy)
         originator.set_state(expense)

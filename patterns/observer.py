@@ -24,3 +24,8 @@ class EmailAlert(Observer):
 class SMSAlert(Observer):
     def update(self, data):
         print(f"SMS Alert: A new expense recorded: {data}")
+
+class TelegramAlert(Observer):
+    def update(self, data):
+        print(f"Telegram Alert: A new expense recorded: {data}")
+

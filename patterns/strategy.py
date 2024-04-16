@@ -29,3 +29,11 @@ class CostCalculationStrategy:
 
     def calculate(self, data):
         return self.strategy.calculate(data)
+
+class SeasonalDiscountStrategy(CalculationStrategy):
+    def calculate(self, data):
+        total = 0
+        for item in data:
+            discount = 0.1 if item['is_seasonal'] else 0
+            total += (item['price'] - item['price'] * discount) * item['quantity']
+        return total
