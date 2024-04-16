@@ -4,6 +4,7 @@ from patterns.strategy import SimpleCostStrategy, DetailedCostStrategy, CostCalc
 from patterns.template_method import BaseExpenseCalculator
 from patterns.adapter import DataAdapter
 from patterns.memento import Caretaker, Originator
+import json
 
 app = Flask(__name__)
 
@@ -25,7 +26,13 @@ def index():
     if request.method == 'POST':
         data = request.form['expense_data']
         strategy_choice = request.form['strategy']
-        adapted_data = data_adapter.adapt(data)
+        try:
+            parsed_data = json.loads(data)
+        except json.JSONDecodeError:
+            message = "Invalid JSON data provided."
+            return render_template('index.html', message=message, expenses=expenses)
+
+        adapted_data = data_adapter.adapt(parsed_data)
 
         if strategy_choice == 'simple':
             cost_strategy.set_strategy(SimpleCostStrategy())

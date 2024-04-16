@@ -10,7 +10,9 @@
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
-    <form method="post">
+    
+    <!-- Форма для додавання витрат -->
+    <form method="post" action="/">
         <label for="expense_data">Enter Expense Data (JSON Format):</label><br>
         <textarea id="expense_data" name="expense_data" rows="4" cols="50"></textarea><br>
         <label for="strategy">Choose Calculation Strategy:</label><br>
@@ -20,14 +22,17 @@
         </select><br>
         <input type="submit" value="Record Expense">
     </form>
+
+    <!-- Форма для відміни останньої витрати -->
     <form method="post" action="/undo">
         <input type="submit" value="Undo Last Expense">
-    </form>    
+    </form>
+  
     <h2>Expense History</h2>
     <ul>
-    {% for expense in expenses %}
-        <li>{{ expense }}</li>
-    {% endfor %}
+        {% for expense in expenses %}
+            <li>{{ expense }}</li>
+        {% endfor %}
     </ul>
 </body>
 </html>
